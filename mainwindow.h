@@ -1,4 +1,5 @@
 #include <QMainWindow>
+#include <QSqlDatabase>
 
 namespace Ui {
 class MainWindow;
@@ -13,8 +14,17 @@ public:
     explicit MainWindow(::QWidget* parent = nullptr);
     ~MainWindow();
 
+    bool start();
+    void stop();
+
+private:
+    bool setup_db();
+    bool refresh_data();
+
 private:
     ::Ui::MainWindow* _ui = nullptr;
+
+    QSqlDatabase _db = ::QSqlDatabase::database();
 };
 
 } // namespace self
