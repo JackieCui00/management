@@ -18,6 +18,9 @@ public:
     void stop();
 
 private:
+    void on_add_trade();
+
+private:
     bool setup_db();
     bool refresh_data();
 

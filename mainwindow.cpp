@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "ui_trade_dialog.h"
 
 #include <QDir>
 #include <QDebug>
@@ -21,6 +22,8 @@ MainWindow::MainWindow(::QWidget* parent) : ::QMainWindow(parent), _ui(new ::Ui:
 
         _ui->trade_table->verticalHeader()->setVisible(false);
     }
+
+    connect(_ui->actionNewTrade, &::QAction::triggered, this, &MainWindow::on_add_trade);
 }
 
 MainWindow::~MainWindow() {
@@ -44,6 +47,56 @@ void MainWindow::stop() {
     if (_db.isOpen()) {
         _db.close();
     }
+}
+
+void MainWindow::on_add_trade() {
+    ::QDialog dialog(this);
+    ::Ui::TradeDialog trade_dialog;
+    trade_dialog.setupUi(&dialog);
+
+    { // set up accounts
+        const ::QString sql = "SELECT name FROM accounts";
+        auto query = _db.exec(sql);
+        if (!query.isActive()) {
+            qDebug() << "Fail to exec sql:<" << sql << ">, error:" << query.lastError();
+            return;
+        }
+        while (query.next()) {
+            trade_dialog.account_input->addItem(query.value(0).toString());
+        }
+    }
+
+    dialog.exec();
+
+    const ::QString account = trade_dialog.account_input->currentText();
+    const ::QString amount = trade_dialog.amount_input->text();
+    const ::QString time = trade_dialog.time_input->text();
+    const ::QString brief = trade_dialog.brief_input->text();
+    const ::QString description = trade_dialog.description_input->toPlainText();
+
+    qDebug() << "User finished trade_dialog, account:" << account
+        << ", amount:" << amount << ", time:" << time << ", brief:" << brief
+        << ", description:" << description;
+
+    { // amount must be a number
+        bool amount_ok = false;
+        (void)trade_dialog.amount_input->text().toDouble(&amount_ok);
+        if (!amount_ok) {
+            qDebug() << "Invalid amount:" << amount << ", must be a number";
+            return;
+        }
+    }
+
+    { // insert into db
+        const ::QString sql = ::QString("INSERT INTO trades (account, amount, time, brief, description) values ('%1', %2, '%3', '%4', '%5')").arg(account, amount, time, brief, description);
+        auto query = _db.exec(sql);
+        if (!query.isActive()) {
+            qDebug() << "Fail to exec sql:<" << sql << ">, error:" << query.lastError();
+            return;
+        }
+    }
+
+    this->refresh_data();
 }
 
 bool MainWindow::setup_db() {
