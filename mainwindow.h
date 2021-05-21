@@ -19,6 +19,7 @@ public:
 
 private:
     void on_add_trade();
+    void on_add_account();
 
 private:
     bool setup_db();

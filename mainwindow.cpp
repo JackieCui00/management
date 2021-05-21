@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "ui_trade_dialog.h"
+#include "ui_account_dialog.h"
 
 #include <QDir>
 #include <QDebug>
@@ -24,6 +25,7 @@ MainWindow::MainWindow(::QWidget* parent) : ::QMainWindow(parent), _ui(new ::Ui:
     }
 
     connect(_ui->actionNewTrade, &::QAction::triggered, this, &MainWindow::on_add_trade);
+    connect(_ui->actionAddAccount, &::QAction::triggered, this, &MainWindow::on_add_account);
 }
 
 MainWindow::~MainWindow() {
@@ -53,6 +55,7 @@ void MainWindow::on_add_trade() {
     ::QDialog dialog(this);
     ::Ui::TradeDialog trade_dialog;
     trade_dialog.setupUi(&dialog);
+    trade_dialog.time_input->setDateTime(::QDateTime::currentDateTime());
 
     { // set up accounts
         const ::QString sql = "SELECT name FROM accounts";
@@ -66,7 +69,9 @@ void MainWindow::on_add_trade() {
         }
     }
 
-    dialog.exec();
+    if (::QDialog::Rejected == dialog.exec()) {
+        return;
+    }
 
     const ::QString account = trade_dialog.account_input->currentText();
     const ::QString amount = trade_dialog.amount_input->text();
@@ -80,7 +85,7 @@ void MainWindow::on_add_trade() {
 
     { // amount must be a number
         bool amount_ok = false;
-        (void)trade_dialog.amount_input->text().toDouble(&amount_ok);
+        (void)amount.toDouble(&amount_ok);
         if (!amount_ok) {
             qDebug() << "Invalid amount:" << amount << ", must be a number";
             return;
@@ -97,6 +102,41 @@ void MainWindow::on_add_trade() {
     }
 
     this->refresh_data();
+}
+
+void MainWindow::on_add_account() {
+    ::QDialog dialog(this);
+    ::Ui::AccountDialog account_dialog;
+    account_dialog.setupUi(&dialog);
+
+    if (::QDialog::Rejected == dialog.exec()) {
+        return;
+    }
+
+    const ::QString account = account_dialog.account_input->text();
+    const ::QString balance = account_dialog.balance_input->text();
+    const ::QString description = account_dialog.description_input->toPlainText();
+
+    qDebug() << "User finished accmount_dialog, account:" << account
+        << ", balance:" << balance << ", description:" << description;
+
+    { // balance must be a number
+        bool balance_ok = false;
+        (void)balance.toDouble(&balance_ok);
+        if (!balance_ok) {
+            qDebug() << "Invalid balance:" << balance << ", must be a number";
+            return;
+        }
+    }
+
+    { // insert into db
+        const ::QString sql = ::QString("INSERT INTO accounts (name, balance, description) values ('%1', %2, '%3')").arg(account, balance, description);
+        auto query = _db.exec(sql);
+        if (!query.isActive()) {
+            qDebug() << "Fail to exec sql:<" << sql << ">, error:" << query.lastError();
+            return;
+        }
+    }
 }
 
 bool MainWindow::setup_db() {

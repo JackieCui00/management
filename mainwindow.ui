@@ -89,9 +89,34 @@
    </attribute>
    <addaction name="actionNewTrade"/>
   </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>45</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="file_menu">
+    <property name="title">
+     <string>File</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="financial_menu">
+    <property name="title">
+     <string>Financial</string>
+    </property>
+    <addaction name="actionAddAccount"/>
+   </widget>
+   <addaction name="file_menu"/>
+   <addaction name="financial_menu"/>
+  </widget>
   <action name="actionNewTrade">
    <property name="icon">
-    <iconset theme="list-add"/>
+    <iconset theme="list-add">
+     <normaloff/>
+    </iconset>
    </property>
    <property name="text">
     <string>NewTrade</string>
@@ -101,6 +126,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionAddAccount">
+   <property name="text">
+    <string>AddAccount</string>
    </property>
   </action>
  </widget>

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>320</height>
+    <width>459</width>
+    <height>382</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -79,9 +79,15 @@
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="KDateTimeEdit" name="kdatetimeedit">
-       <property name="options">
-        <set>KDateTimeEdit::DateKeywords|KDateTimeEdit::DatePicker|KDateTimeEdit::EditDate|KDateTimeEdit::EditTime|KDateTimeEdit::SelectDate|KDateTimeEdit::SelectTime|KDateTimeEdit::ShowDate|KDateTimeEdit::ShowTime</set>
+      <widget class="QDateTimeEdit" name="time_input">
+       <property name="currentSection">
+        <enum>QDateTimeEdit::YearSection</enum>
+       </property>
+       <property name="displayFormat">
+        <string>yyyy-MM-dd hh:mm:ss</string>
+       </property>
+       <property name="calendarPopup">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -99,13 +105,6 @@
    </item>
   </layout>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>KDateTimeEdit</class>
-   <extends>QWidget</extends>
-   <header>kdatetimeedit.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections>
   <connection>
@@ -115,12 +114,12 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
+     <x>229</x>
+     <y>347</y>
     </hint>
     <hint type="destinationlabel">
-     <x>157</x>
-     <y>274</y>
+     <x>229</x>
+     <y>190</y>
     </hint>
    </hints>
   </connection>
@@ -131,12 +130,12 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
+     <x>229</x>
+     <y>347</y>
     </hint>
     <hint type="destinationlabel">
-     <x>286</x>
-     <y>274</y>
+     <x>229</x>
+     <y>190</y>
     </hint>
    </hints>
   </connection>
